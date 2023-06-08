@@ -13,9 +13,12 @@ app.use(express.json())
 
 //middlewares
 app.use(cors()) // cross origin resources sharing to allow incoming requests
-
+app.use(cookieParser(process.env.SECRET_TOKEN))
 //index route
 app.use(`/api/auth`, require('./route/authRoute'))
+app.use(`/api/category`, require('./route/categoryRoute'))
+app.use(`/api/book`, require('./route/bookRoute'))
+app.use(`/api/rent`, require('./route/rentRoute'))
 
 //default route
 app.all(`**`, async (req,res) => {

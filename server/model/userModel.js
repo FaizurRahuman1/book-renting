@@ -42,11 +42,11 @@ const UserSchema = new mongoose.Schema({
     },
     validateEmail: {
         type: Boolean,
-        default: {}
+        default: false
     },
     validateMobile: {
         type:String,
-        default:{}
+        default:false
     }
 },{
     collection: "users",
