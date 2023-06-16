@@ -1,65 +1,71 @@
 const Book = require('../model/bookModel')
 
 const bookCtrl = {
-    getAll: async(req,res) => {
+    getAll: async (req,res) => {
         try {
-            const data = await Book.find({})
-            return res.status(200).json({length: data.length, books:data})
+          const data = await Book.find({})
+          return res.status(200).json({ length: data.length, books: data })
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     },
-    getSingle: async(req,res) => {
+    getSingle: async (req,res) => {
         try {
-           let id = req.params.id
-           const data = await Book.findById({_id: id})
-           return res.status(200).json({book: data})
+            let id = req.params.id 
+            const data = await Book.findById({ _id: id })
+            return res.status(200).json({ book: data })
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     },
-    create: async(req,res) => {
+    create: async (req,res) => {
         try {
-            if(!req.body.isbn)
-            return res.status(404).json({msg: `ISBN number is required`})
+                if(!req.body.isbn)
+                    return res.status(404).json({msg: `ISBN Number is required`})
 
-            let extBook = await Book.findOne({ isbn: req.body.isbn})
-            if(extBook)
-            return res.status(400).json({msg: `ISBN code already allocated..`})
-
+                let extBook = await Book.findOne({ isbn: req.body.isbn })
+                    if(extBook)
+                        return res.status(400).json({ msg: `ISBN code already allowcated..`})
+                    
             let newItem = await Book.create(req.body)
-            return res.status(200).json({msg: "new book added successfully", book:newItem})
+            return res.status(200).json({ msg: "New Book added successfully", book: newItem })
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     },
-    update: async(req,res) => {
+    update: async (req,res) => {
         try {
-            let id = req.params.id
-            let extBook = await Book.findById({_id: req.params.id})
-            if(!extBook)
-            return res.status(404).json({msg: `requested book id not found..`})
+                let id = req.params.id 
 
-            await Book.findByIdAndUpdate({_id: id}, req.body)
+             let extBook  = await Book.findById({ _id: req.params.id })
 
-            return res.status(200).json({msg: " book updated successfully"})
-        
+                if(!extBook)
+                    return res.status(404).json({ msg: `Requested book id not found..`})
+                                        
+             await Book.findByIdAndUpdate({ _id: id }, req.body)
+
+            return res.status(200).json({ msg: "Book updated successfully" })
+
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     },
-    delete: async(req,res) => {
+    delete: async (req,res) => {
         try {
-            let id = req.params.id
-            let extBook = await Book.findById({_id: req.params.id})
+            let id = req.params.id  
+            
+            let extBook  = await Book.findById({ _id: req.params.id })
+
             if(!extBook)
-            return res.status(404).json({msg: `requested book id not found..`})
+                return res.status(404).json({ msg: `Requested book id not found..`})
+                                        
+             await Book.findByIdAndDelete({ _id: id })
 
-            await Book.findByIdAndUpdate({_id: id}, req.body)
+            return res.status(200).json({ msg: "Book deleted successfully" })
 
-            return res.status(200).json({msg: "book deleted successfully"})
+
         } catch (err) {
-            return res.status(500).json({msg: err.message})
+            return res.status(500).json({ msg: err.message })
         }
     }
 }
