@@ -1,4 +1,6 @@
 const User = require('../model/userModel')
+const Rent = require('../model/rentModel')
+
 const bcrypt = require('bcryptjs')
 const { createLoginToken } = require('../util/token')
 const jwt = require('jsonwebtoken')
@@ -109,7 +111,61 @@ const authController = {
         } catch (err) {
             return res.status(500).json({ msg: err.message })
         }
-    }
+    },
+    allUsers: async (req,res) => {
+        try {
+            const data = await User.find()
+
+            const users = data.filter(item => item.role !== "superadmin")
+            
+            return res.status(200).json({ length: users.length, users })
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
+    blockUser: async (req,res) => {
+        try {
+            const id = req.params.id 
+
+            const user = await User.findById({ _id: id })
+                if(!user) 
+                    return res.status(404).json({ msg: "requested user id not found"})
+
+             await User.findByIdAndUpdate({ _id: id }, {
+                isActive: !user.isActive
+            })
+
+                if(user.isActive === true) {
+                    return res.status(200).json({ msg: "User blocked successfully"})
+                } else {
+                    return res.status(200).json({ msg: "User Un-blocked successfully"})
+                }
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
+    deleteUser: async (req,res) => {
+        try {
+            const id = req.params.id 
+
+            const user = await User.findById({ _id: id })
+                if(!user) 
+                    return res.status(404).json({ msg: "requested user id not found"})
+
+            const data = await Rent.findOne({ userId: id })
+
+                 if(data) {
+                    return res.status(400).json({ msg: "User have pending rented books.Can't delete Profile."})
+                 } 
+
+                    await User.findByIdAndDelete({ _id: id })
+
+            return res.status(200).json({ msg: "User deleted successfully"})
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
+
 }
 
 module.exports = authController

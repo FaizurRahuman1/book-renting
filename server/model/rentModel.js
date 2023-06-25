@@ -27,6 +27,14 @@ const rentSchema = new mongoose.Schema({
             type: String,
             enum: ["paid","unpaid"],
             default: "unpaid"
+        },
+        book: {
+            type: Object,
+            default: {}
+        },
+        user: {
+            type: Object,
+            default: {}
         }
 },{
     collection: 'rent',
